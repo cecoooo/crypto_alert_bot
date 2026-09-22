@@ -1,0 +1,11 @@
+services:
+  crypto-alert-bot:
+    build:
+      context: .
+    image: crypto-alert-bot:latest
+    container_name: crypto-alert-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
