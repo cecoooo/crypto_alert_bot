@@ -43,7 +43,7 @@ export function createTestDependencies() {
     }
   };
 
-  const alertStateService = {
+  const alertStateStore = {
     load: vi.fn().mockResolvedValue(new Set<string>()),
     save: vi.fn().mockResolvedValue(undefined)
   };
@@ -51,7 +51,7 @@ export function createTestDependencies() {
   return {
     bot,
     sendMessage,
-    alertStateService
+    alertStateStore
   };
 }
 

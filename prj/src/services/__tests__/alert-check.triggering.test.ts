@@ -17,14 +17,14 @@ describe("AlertCheckService: triggering", () => {
   });
 
   it("sends and persists the first BTC below-threshold alert", async () => {
-    const { bot, sendMessage, alertStateService } = createTestDependencies();
+    const { bot, sendMessage, alertStateStore } = createTestDependencies();
 
     mockFetchPrices.mockResolvedValue(createPrices(85_900));
 
     const service = new AlertCheckService(
       bot as never,
       [btcRule],
-      alertStateService as never
+      alertStateStore as never
     );
 
     await service.check();
@@ -39,12 +39,12 @@ describe("AlertCheckService: triggering", () => {
       "123456789",
       "BTC: fell below $86000.00; current=$85900.00"
     );
-    expect(alertStateService.save).toHaveBeenCalledTimes(1);
+    expect(alertStateStore.save).toHaveBeenCalledTimes(1);
     expect(service.isRuleTriggered(btcRule.id)).toBe(true);
   });
 
   it("does not send a duplicate BTC alert while BTC remains below the threshold", async () => {
-    const { bot, sendMessage, alertStateService } = createTestDependencies();
+    const { bot, sendMessage, alertStateStore } = createTestDependencies();
 
     mockFetchPrices
       .mockResolvedValueOnce(createPrices(85_900))
@@ -53,26 +53,26 @@ describe("AlertCheckService: triggering", () => {
     const service = new AlertCheckService(
       bot as never,
       [btcRule],
-      alertStateService as never
+      alertStateStore as never
     );
 
     await service.check();
     await service.check();
 
     expect(sendMessage).toHaveBeenCalledTimes(1);
-    expect(alertStateService.save).toHaveBeenCalledTimes(1);
+    expect(alertStateStore.save).toHaveBeenCalledTimes(1);
     expect(service.isRuleTriggered(btcRule.id)).toBe(true);
   });
 
   it("sends an ETH alert when ETH rises above its threshold", async () => {
-    const { bot, sendMessage, alertStateService } = createTestDependencies();
+    const { bot, sendMessage, alertStateStore } = createTestDependencies();
 
     mockFetchPrices.mockResolvedValue(createPrices(84_000, 3_001));
 
     const service = new AlertCheckService(
       bot as never,
       [ethRule],
-      alertStateService as never
+      alertStateStore as never
     );
 
     await service.check();
@@ -84,7 +84,7 @@ describe("AlertCheckService: triggering", () => {
       "rose above $3000.00"
     );
     expect(sendMessage).toHaveBeenCalledTimes(1);
-    expect(alertStateService.save).toHaveBeenCalledTimes(1);
+    expect(alertStateStore.save).toHaveBeenCalledTimes(1);
     expect(service.isRuleTriggered(ethRule.id)).toBe(true);
   });
 });

@@ -3,7 +3,7 @@ import type { Telegraf } from "telegraf";
 import { env } from "../config/env.js";
 import { createAlertMessage } from "../bot/messages.js";
 import { fetchPrices, formatPrice } from "./price.service.js";
-import { AlertStateService } from "./alert-state.service.js";
+import type { AlertStateStore } from "./alert-state.store.js";
 import type { AlertRule } from "../types/alert.js";
 
 export class AlertCheckService {
@@ -13,11 +13,11 @@ export class AlertCheckService {
   public constructor(
     private readonly bot: Telegraf,
     private readonly rules: AlertRule[],
-    private readonly alertStateService: AlertStateService
+    private readonly alertStateStore: AlertStateStore
   ) {}
 
   public async loadState(): Promise<void> {
-    const loadedRuleIds = await this.alertStateService.load();
+    const loadedRuleIds = await this.alertStateStore.load();
 
     for (const ruleId of loadedRuleIds) {
       this.triggeredRuleIds.add(ruleId);
@@ -81,14 +81,14 @@ export class AlertCheckService {
           );
 
           this.triggeredRuleIds.add(rule.id);
-          await this.alertStateService.save(this.triggeredRuleIds);
+          await this.alertStateStore.save(this.triggeredRuleIds);
 
           console.log(`Alert sent for rule: ${rule.id}`);
         }
 
         if (!isTriggered && wasAlreadyTriggered) {
           this.triggeredRuleIds.delete(rule.id);
-          await this.alertStateService.save(this.triggeredRuleIds);
+          await this.alertStateStore.save(this.triggeredRuleIds);
 
           console.log(`Alert reset for rule: ${rule.id}`);
         }

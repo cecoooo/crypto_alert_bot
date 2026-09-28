@@ -23,5 +23,6 @@ export const env = {
   telegramBotToken: requireEnvironmentVariable("TELEGRAM_BOT_TOKEN"),
   telegramChatId: requireEnvironmentVariable("TELEGRAM_CHAT_ID"),
   cronExpression,
-  currency: (process.env.COINGECKO_VS_CURRENCY ?? "usd") as Currency
+  currency: (process.env.COINGECKO_VS_CURRENCY ?? "usd") as Currency,
+  databaseUrl: requireEnvironmentVariable("DATABASE_URL")
 } as const;

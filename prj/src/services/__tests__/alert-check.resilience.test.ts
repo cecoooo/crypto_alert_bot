@@ -16,7 +16,7 @@ describe("AlertCheckService: resilience", () => {
   });
 
   it("skips a check when the previous check is still running", async () => {
-    const { bot, alertStateService } = createTestDependencies();
+    const { bot, alertStateStore } = createTestDependencies();
 
     let resolvePrices: ((prices: CoinGeckoResponse) => void) | undefined;
 
@@ -30,7 +30,7 @@ describe("AlertCheckService: resilience", () => {
     const service = new AlertCheckService(
       bot as never,
       [btcRule],
-      alertStateService as never
+      alertStateStore as never
     );
 
     const firstCheck = service.check();
@@ -46,19 +46,19 @@ describe("AlertCheckService: resilience", () => {
   });
 
   it("handles a price-fetch error without throwing from check", async () => {
-    const { bot, sendMessage, alertStateService } = createTestDependencies();
+    const { bot, sendMessage, alertStateStore } = createTestDependencies();
 
     mockFetchPrices.mockRejectedValue(new Error("CoinGecko unavailable"));
 
     const service = new AlertCheckService(
       bot as never,
       [btcRule],
-      alertStateService as never
+      alertStateStore as never
     );
 
     await expect(service.check()).resolves.toBeUndefined();
 
     expect(sendMessage).not.toHaveBeenCalled();
-    expect(alertStateService.save).not.toHaveBeenCalled();
+    expect(alertStateStore.save).not.toHaveBeenCalled();
   });
 });

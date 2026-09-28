@@ -21,4 +21,6 @@ RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
 
+COPY db ./db
+
 CMD ["node", "dist/index.js"]
